@@ -1,0 +1,31 @@
+{
+    "colunas": [
+        "selo",
+        "dtRecebimento",
+        "dtAprovacao",
+        "aprovado",
+        "fonte",
+        "parte",
+        "idNegocio",
+        "dtNegocio",
+        "dtAbate",
+        "quantidade",
+        "operacao",
+        "modalidade",
+        "bonus",
+        "categoria",
+        "raca",
+        "nutricao",
+        "origem",
+        "origemUf",
+        "destino",
+        "destinoUf",
+        "planta",
+        "frete",
+        "funrural",
+        "diasPgto",
+        "valorBase",
+        "pesomodo",
+        "pesopercent"
+    ]
+}

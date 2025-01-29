@@ -1,0 +1,38 @@
+{
+    "name": "src/csv-input",
+    "autoload": {
+        "psr-4": {
+            "Src\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Thiago de Jesus Vieira",
+            "email": "thiago.vieira@datagro.com"
+        }
+    ],
+    "require": {
+        "symfony/routing": "^6.0",
+        "symfony/http-foundation": "^6.0",
+        "symfony/http-kernel": "^6.0",
+        "symfony/config": "^6.4",
+        "symfony/yaml": "^6.4",
+        "symfony/runtime": "^6.4",
+        "symfony/console": "^7.2",
+        "vlucas/phpdotenv": "^5.6",
+        "aws/aws-sdk-php": "^3.332",
+        "ramsey/uuid": "^4.7",
+        "shuchkin/simplexlsx": "^1.1",
+        "kreait/firebase-php": "^7.16",
+        "google/cloud-core": "^1.60",
+        "symfony/framework-bundle": "^7.1",
+        "grpc/grpc": "^1.38",
+        "google/cloud-firestore": "*"
+    },
+    "config": {
+        "allow-plugins": {
+            "symfony/runtime": true
+        },
+        "cache-dir": "/path/to/cache"
+    }
+}

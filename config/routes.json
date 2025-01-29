@@ -1,0 +1,20 @@
+
+[
+
+  {
+    "nome": "home",
+    "pacote": "/",
+    "controlador": "\\Src\\Infraestrutura\\Web\\Controladores\\ControladorNegocio::upload",
+    "metodos": ["POST"]
+  },
+  {
+    "nome": "App",
+    "pacote": "/negociacoesapp",
+    "controlador": "\\Src\\Infraestrutura\\Web\\Controladores\\ControladorNegocio::upload",
+    "metodos": ["GET"]
+  }
+]
+
+
+
+

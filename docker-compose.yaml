@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: recepcao
+    volumes:
+      - .:/var/www/html
+    # networks:
+    #   - symfony_network
+    ports:
+      - 8080:80
+
+# networks:
+#   - symfony_network
