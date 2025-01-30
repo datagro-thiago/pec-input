@@ -207,58 +207,78 @@ class ServicoNegociacao
         public function resolverMunicipio(string $origemM, string $destinoM, ?string $ufPlanta): array
         {
             $buscarMunicipioComCache = function (string $nome) use ($ufPlanta) {
-                return ServicoCache::buscar($nome, function () use ($nome, $ufPlanta) {
-                    return ServicoMunicipio::buscarMunicipio($nome, $ufPlanta);
-                });
+            return ServicoCache::buscar($nome, function () use ($nome, $ufPlanta) {
+                return ServicoMunicipio::buscarMunicipio($nome, $ufPlanta);
+            });
             };
+            
             $formatarMunicipio = fn(string $municipio): string => 
-                trim(str_replace('NA -', '', $municipio));
-        
+            trim(str_replace('NA -', '', $municipio));
+
             // Formatar e buscar origem e destino
             $origem = $buscarMunicipioComCache($formatarMunicipio($origemM));
             $destino = $buscarMunicipioComCache($formatarMunicipio($destinoM));
-        
+
             // Verificar múltiplas ocorrências
             $origemRepetidos = isset($origem['repetidos']) && count($origem['repetidos']) > 1;
             $destinoRepetidos = isset($destino['repetidos']) && count($destino['repetidos']) > 1;
-        
-            if ($origemRepetidos && $destinoRepetidos) {
-                return [
-                    'origemUf' => $ufPlanta,
-                    'destinoUf' => $ufPlanta,
-                ];
-            }
-//          Se a origem for repetida e o destino não, retorna o estado do destino        
-            if ($origemRepetidos && !empty($destino['estado'])) {
-                return [
-                    'origem' => $destino['id'],
-                    'destino' => $destino['id'],
-                    'origemUf' => $destino['estado'],
-                    'destinoUf' => $destino['estado'],
-                ];
-            }
-//          Se o destino for repetido e a origem não, retorna o estado da origem       
 
-            if ($destinoRepetidos && !empty($origem['estado'])) {
-                return [
-                    'origem' => $origem['id'],
-                    'destino' => $origem['id'],
-                    'origemUf' => $origem['estado'],
-                    'destinoUf' => $origem['estado'],
-                ];
-            }
-     
-            // Retorno padrão
-            return [
-                'origem' => $origem['id'] ?? 0,
-                'destino' => $destino['id'] ?? 0,
-                'origemUf' => $origem['estado'] ?? '',
-                'destinoUf' => $destino['estado'] ?? '',
+            $result = [
+            'origem' => $origem['id'] ?? 0,
+            'destino' => $destino['id'] ?? 0,
+            'origemUf' => $origem['estado'] ?? '',
+            'destinoUf' => $destino['estado'] ?? '',
             ];
+
+            if ($origemRepetidos && $destinoRepetidos) {
+            foreach ($origem['repetidos'] as $origemRepetido) {
+                foreach ($destino['repetidos'] as $destinoRepetido) {
+                if ($origemRepetido['estado'] === $destinoRepetido['estado'] && $origemRepetido['estado'] === $ufPlanta) {
+                    $result['origem'] = $origemRepetido['id'];
+                    $result['destino'] = $destinoRepetido['id'];
+                    $result['origemUf'] = $ufPlanta;
+                    $result['destinoUf'] = $ufPlanta;
+                    break 2;
+                }
+                }
+            }
+            } elseif ($origemRepetidos) {
+            foreach ($origem['repetidos'] as $origemRepetido) {
+                if ($origemRepetido['estado'] === $destino['estado']) {
+                $result['origem'] = $origemRepetido['id'];
+                $result['origemUf'] = $origemRepetido['estado'];
+                break;
+                }
+            }
+            } elseif ($destinoRepetidos) {
+            foreach ($destino['repetidos'] as $destinoRepetido) {
+                if ($destinoRepetido['estado'] === $origem['estado']) {
+                $result['destino'] = $destinoRepetido['id'];
+                $result['destinoUf'] = $destinoRepetido['estado'];
+                break;
+                }
+            }
+            }
+
+
+            // Se não encontrou a origem, usar a UF do destino
+            if (empty($result['origemUf']) && !empty($result['destinoUf'])) {
+            $result['origemUf'] = $result['destinoUf'];
+            }
+
+            // Se não encontrou o destino, usar a UF da origem
+            if (empty($result['destinoUf']) && !empty($result['origemUf'])) {
+            $result['destinoUf'] = $result['origemUf'];
+            }
+
+            return $result;
         }
-        
-    public function definirMunicipio(string $origemM, string $destinoM, ?string $uf, string $idNegocio): array
+    public function definirMunicipio(string $origemM, string $destinoM, ?string $uf): array
         {
+
+            // var_dump($origemM);
+            // var_dump($destinoM);
+            // var_dump($origemM);
         // Validar se a origem ou destino é "EX"
         if ($origemM === 'EX' || $destinoM === 'EX') {
             return [
@@ -269,7 +289,6 @@ class ServicoNegociacao
 
         // Resolver UF considerando regras de múltiplas ocorrências
         $ufs = $this->resolverMunicipio($origemM, $destinoM, $uf);
-
         // Retornar IDs e UFs resolvidos
         return [
             'origem' => $ufs['origem'],
@@ -278,7 +297,4 @@ class ServicoNegociacao
             'destinoUf' => $ufs['destinoUf'],
         ];
         }
-
-
-
     }

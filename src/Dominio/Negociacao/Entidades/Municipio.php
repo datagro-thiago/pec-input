@@ -124,13 +124,53 @@ class Municipio
 
     public static function buscarPorNome(string $nome, ?string $estado): ?array
         {
-        foreach (self::$municipiosCache as $municipio) {
-            $validarEstado = !empty($estado) ? self::validarEstado($municipio, $estado) : null;
-            if (strcasecmp($municipio->getNome(), $nome) === 0 && $validarEstado) {
-                return ['id' => $municipio->getId(), 'estado' => $municipio->getEstado()];
-                }
+        $municipiosEncontrados = array_filter(
+            self::$municipiosCache,
+            fn($municipio) =>
+            strcasecmp($municipio->getNome(), $nome) === 0
+        );
+
+        if (count($municipiosEncontrados) === 1) {
+            $municipio = reset($municipiosEncontrados);
+            if (empty($estado) || self::validarEstado($municipio, $estado)) {
+                return [
+                    'id' => $municipio->getId(),
+                    'nome' => $municipio->getNome(),
+                    'estado' => $municipio->getEstado(),
+                    'pais' => $municipio->getPais(),
+                    'pais_alpha2' => $municipio->getPaisAlpha2(),
+                    'pais_num' => $municipio->getPaisNum(),
+                    'slug' => $municipio->getSlug(),
+                ];
             }
-        var_dump('NOME');
+        }
+
+        if (count($municipiosEncontrados) > 1) {
+            $municipiosValidos = array_filter($municipiosEncontrados, fn($municipio) => empty($estado) || self::validarEstado($municipio, $estado));
+            if (count($municipiosValidos) === 1) {
+                $municipio = reset($municipiosValidos);
+                return [
+                    'id' => $municipio->getId(),
+                    'nome' => $municipio->getNome(),
+                    'estado' => $municipio->getEstado(),
+                    'pais' => $municipio->getPais(),
+                    'pais_alpha2' => $municipio->getPaisAlpha2(),
+                    'pais_num' => $municipio->getPaisNum(),
+                    'slug' => $municipio->getSlug(),
+                ];
+            }
+            return ['repetidos' => array_map(function ($municipio) {
+                return [
+                    'id' => $municipio->getId(),
+                    'nome' => $municipio->getNome(),
+                    'estado' => $municipio->getEstado(),
+                    'pais' => $municipio->getPais(),
+                    'pais_alpha2' => $municipio->getPaisAlpha2(),
+                    'pais_num' => $municipio->getPaisNum(),
+                    'slug' => $municipio->getSlug(),
+                ];
+            }, $municipiosValidos)];
+        }
 
         return null;
         }
@@ -161,32 +201,47 @@ class Municipio
         return $nome;
         }
 
-    public static function buscarPorSlug(string $slug, ?string $estado): ?array
+    public static function buscarPorSlug(string $slug, ?string $estado): ?array 
         {
-        var_dump('SLUG');
-
         $municipiosEncontrados = array_filter(
             self::$municipiosCache,
             fn($municipio) =>
-            strcasecmp($municipio->getSlug(), $slug) === 0
+            strpos($municipio->getSlug(), $slug) !== false
         );
 
         if (count($municipiosEncontrados) === 1) {
             $municipio = reset($municipiosEncontrados);
-            return ['id' => $municipio->getId(), 'estado' => $municipio->getEstado()];
-            }
+            return [
+                'id' => $municipio->getId(),
+                'nome' => $municipio->getNome(),
+                'estado' => $municipio->getEstado(),
+                'pais' => $municipio->getPais(),
+                'pais_alpha2' => $municipio->getPaisAlpha2(),
+                'pais_num' => $municipio->getPaisNum(),
+                'slug' => $municipio->getSlug(),
+            ];
+        }
 
         if (count($municipiosEncontrados) > 1) {
-            return ['repetidos' => $municipiosEncontrados];
-            }
+            return ['repetidos' => array_map(function ($municipio) {
+                return [
+                    'id' => $municipio->getId(),
+                    'nome' => $municipio->getNome(),
+                    'estado' => $municipio->getEstado(),
+                    'pais' => $municipio->getPais(),
+                    'pais_alpha2' => $municipio->getPaisAlpha2(),
+                    'pais_num' => $municipio->getPaisNum(),
+                    'slug' => $municipio->getSlug(),
+                ];
+            }, $municipiosEncontrados)];
+        }
+
         return null;
         }
 
 
     public static function buscarPorSimilaridade(string $nome, ?string $estado): ?array
         {
-        var_dump('SIMILARIDADE');
-
         $melhorSimilaridade = 0; // Armazena a maior similaridade encontrada
         $melhorMunicipio = null; // Armazena o melhor município encontrado
 

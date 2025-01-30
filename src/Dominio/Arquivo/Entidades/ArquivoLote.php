@@ -13,13 +13,15 @@ class ArquivoLote
     private string $remetente;
     private string $caminho;
     private bool $caminhoDefault;
+    private string $rename;
     public function __construct(
         string $nome,
         string $tipo,
         string $data,
         string $remetente,
         string $caminho,
-        bool $caminhoDefault = false
+        bool $caminhoDefault = false,
+        string $rename,
     ) {
         $this->id = new ArquivoLoteId();
         $this->nome = $nome;
@@ -28,6 +30,7 @@ class ArquivoLote
         $this->remetente = $remetente;
         $this->caminho = $caminho;
         $this->caminhoDefault = $caminhoDefault;
+        $this->rename = $rename;
         }
 
     public static function setNome(string $nome): void
@@ -50,7 +53,10 @@ class ArquivoLote
         {
         return $this->remetente;
         }
-    
+    public function getRename(): string
+        {
+        return $this->rename;
+        }
     public function setRemetente(string $remetente): void
         {
         $this->remetente = $remetente;

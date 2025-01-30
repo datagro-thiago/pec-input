@@ -33,13 +33,12 @@ class ServicoNegociacaoFactory
             $frete = $this->servico->definirFrete($negociacoes['frete'] ?? "", $lote->getRemetente());
             $dataHora = $this->converterDataHora($negociacoes["datahora"] ?? "0000-00-00");
             $dataAbate = $this->converterDataHora($negociacoes["dtabate"] ?? ($negociacoes["dtAbate"] ?? "0000-00-00"));
-            $idNegocio = $this->obterIdNegocio($lote, $negociacoes);
             $municipio = $this->servico->definirMunicipio(
                 $negociacoes["origem"] ?? ($negociacoes["origemUf"] ?? ''),
                 $negociacoes["destino"] ?? ($negociacoes["destinoUf"] ?? ''),
-                !empty($planta)? $planta->getUf() : '',
-                $idNegocio);
+                !empty($planta)? $planta->getUf() : '');
             $bonusMinerva = $this->calcularBonusMinerva($negociacoes, $lote);
+            $idNegocio = $this->obterIdNegocio($lote, $negociacoes, $municipio, $categoria);
 
             // Calculando o valor base
             $valorBase = $this->servico->definirValorBase(
@@ -145,15 +144,15 @@ class ServicoNegociacaoFactory
         }
 
     // Método para obter o ID do negócio
-    private function obterIdNegocio(ArquivoLote $lote, array $negociacoes): string
+    private function obterIdNegocio(ArquivoLote $lote, array $negociacoes, array $municipio, int $categoria): string
         {
         return $negociacoes["idnegocio"] ??
-            ($negociacoes["idNegocio"] ?? $this->criarIdNegocio($lote->getRemetente(), $negociacoes["linha"] ?? 0));
+            ($negociacoes["idNegocio"] ?? $this->criarIdNegocio($lote,$municipio["origemUf"], $categoria, $negociacoes["linha"] ?? 0));
         }
 
     // Método para criar o ID do negócio
-    public function criarIdNegocio(string $remetente, int $linha): string
+    public function criarIdNegocio(ArquivoLote $lote, string $origemUf, int $categoria, int $linha): string
         {
-        return trim($remetente) . "-" . uniqid() . "-L-" . $linha;
+        return $lote->getRename() . "-" . $origemUf . "-" . $categoria . "-" . $linha;
         }
     }

@@ -65,7 +65,6 @@ class BuscarNegociacoesApp
             {
             file_put_contents($caminho, json_encode($json, JSON_UNESCAPED_SLASHES));
             }
-            var_dump($json['irB9OQPQxb0rO1NEHevZ']);
         $lote = new ArquivoLote(
             $this->job . "-neg.json",
             "json",

@@ -58,14 +58,18 @@ class ControladorNegocio
             // Criar lote de arquivo
             $tipoArquivo = pathinfo($arquivoLote->getClientOriginalName(), PATHINFO_EXTENSION);
             $tempName = $arquivoLote->getRealPath();
+            $renomearArquivo = $remetente . '-' . date("Y-m-d-H-i-s") . '.' . $tipoArquivo;
             $lote = new ArquivoLote(
-                $arquivoLote->getClientOriginalName(),
+                $renomearArquivo,
                 $tipoArquivo,
                 date("d-m-Y H:i:s"),
                 $remetente,
-                $tempName
+                $tempName,
+                false,
+                $remetente . '-' . date("Y-m-d")
             );
 
+            //TODO: IMPLEMENTAR ID ZANCHETTA
             // Processar o arquivo
             $handler = $this->negociacaoHandler->executar($lote, $this->job);
             if ($handler["status"] === 0) {

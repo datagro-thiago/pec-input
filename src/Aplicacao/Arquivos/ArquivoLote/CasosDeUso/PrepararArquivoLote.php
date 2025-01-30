@@ -116,6 +116,8 @@ class PrepararArquivoLote
                     'Dias de Pagamento' => 'diasPagto',
                     'UF origem' => 'origemUf',
                     'UF destino' => 'destinoUf',
+                    'Cidade Origem' => 'origem',
+                    'Cidade Destino' => 'destino',
                     'Funrural' => 'funrural',
                     'Frete' => 'frete',
                     'Nutrição' => 'nutricao',

@@ -41,6 +41,8 @@ class NegociacaoHandler
                 $lote->getTipo(),
                 $job,
                 $lote->getRemetente(),
+                
+
             );
             // Logger::log("Arquivo salvo localmente em: " . $gerarArqLote["dirFinal"]);
             // Logger::log("Tempo para salvar o arquivo localmente: " . (microtime() - $time) . " segundos.");

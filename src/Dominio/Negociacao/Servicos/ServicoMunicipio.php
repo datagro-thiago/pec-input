@@ -9,14 +9,11 @@ class ServicoMunicipio
             $dadosFormatados = Municipio::formatarNomeSemEstado($nomeMunicipio);
             $nome = $dadosFormatados['nome'];
             $estado = $dadosFormatados['estado'] ?: $uf;
-            $resultado = Municipio::buscarPorEstado($estado);
-            if (!empty($resultado['estado'])) {
-                return $resultado;
-            }
         
             $slug = Municipio::gerarSlug($nome);
             
             $resultado = Municipio::buscarPorSlug($slug, $estado)
+                ?? Municipio::buscarPorEstado($estado)
                 ?? Municipio::buscarPorNome($nome, $estado)
                 ?? Municipio::buscarPorSimilaridade($nome, $estado);
                             
